@@ -14,31 +14,46 @@ const config = {
 };
 firebase.initializeApp(config);
 
-// Configure FirebaseUI.
-const uiConfig = {
-  // Popup signin flow rather than redirect flow.
-  signInFlow: 'popup',
-  // Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
-  signInSuccessUrl: '/signedIn',
-  // We will display Google and Facebook as auth providers.
-  signInOptions: [
-    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-    firebase.auth.FacebookAuthProvider.PROVIDER_ID
-  ]
-};
-
 export default class ResLogin extends React.Component {
-  constructor(props, context) {
-    super(props, context)
-  }
+
+  state = {
+    signedIn: false // Local signed-in state.
+  };
+
+  // Configure FirebaseUI.
+  uiConfig = {
+    // Popup signin flow rather than redirect flow.
+    signInFlow: 'popup',
+    // We will display Google and Facebook as auth providers.
+    signInOptions: [
+      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+      firebase.auth.FacebookAuthProvider.PROVIDER_ID
+    ],
+    // Sets the `signedIn` state property to `true` once signed in.
+    callbacks: {
+      signInSuccess: () => {
+        this.setState({signedIn: true});
+        return false; // Avoid redirects after sign-in.
+      }
+    }
+  };
+
   render() {
-    return(
+    if (!this.state.signedIn) {
+      return (
+        <div>
+          <h1>My App</h1>
+          <p>Please sign-in:</p>
+          <FirebaseAuth uiConfig={this.uiConfig} firebaseAuth={firebase.auth()}/>
+        </div>
+      );
+    }
+    return (
       <div>
         <h1>My App</h1>
-        <p>Please sign-in:</p>
-        <FirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()}/>
+        <p>Welcome! You are now signed-in!</p>
       </div>
-    )
+    );
   }
 }
 
