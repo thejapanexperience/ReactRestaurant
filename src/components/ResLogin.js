@@ -14,7 +14,7 @@ const config = {
 };
 firebase.initializeApp(config);
 
-export default class ResLogin extends React.Component {
+class ResLogin extends React.Component {
 
   state = {
     signedIn: false // Local signed-in state.
@@ -39,6 +39,8 @@ export default class ResLogin extends React.Component {
   };
 
   render() {
+    console.log('this.state: ', this.state);
+    console.log('store: ', store);
     if (!this.state.signedIn) {
       return (
         <div>
@@ -57,4 +59,11 @@ export default class ResLogin extends React.Component {
   }
 }
 
-ResLogin.propTypes = {};
+function mapStateToProps(state) {
+  return { signedIn: state.signedIn }
+}
+
+export default @connect(mapStateToProps)(ResLogin)
+
+
+// ResLogin.propTypes = {};
